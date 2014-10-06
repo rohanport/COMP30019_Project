@@ -21,15 +21,19 @@ namespace BallFall
         private double gapIndexStdDev; //The standard deviation of the index of missing blocks per platform
 
         private List<Block[]> blockRows;
+        Random rand;
+        StringBuilder debug;
 
         public ScrollingWall()
         {
             blockRows = new List<Block[]>();
+            rand = new Random(); //reuse this if you are generating many random numbers
+            debug = new StringBuilder();
 
             gapMean = 1.0;  
-            gapStdDev = 0.2;
+            gapStdDev = 0.7;
             gapIndexMean = wallWidth / 4;
-            gapIndexStdDev = 0.2;
+            gapIndexStdDev = 0.8;
 
             //Add the first rows to the wall
             for (int i = 0; i < wallHeight; i++) blockRows.Add(newBlockRow());
@@ -87,7 +91,6 @@ namespace BallFall
         //Courtesy of StackOverflow user "yoyoyoyosef": http://stackoverflow.com/users/25571/yoyoyoyosef
         private double getRandomNormal(double mean, double stdDev)
         {
-            Random rand = new Random(); //reuse this if you are generating many
             double v1;//these are uniform (0,1) random doubles
             double v2;
 
@@ -98,6 +101,32 @@ namespace BallFall
             double randNormal = mean + stdDev * randStdNormal; //random normal(mean,stdDev^2)
             
             return randNormal;
+        }
+
+        //Prints the scrolling wall to the console
+        public void print(string filePath)
+        {
+
+            debug.AppendLine("gapMean = " + gapMean);
+            debug.AppendLine("gapStdDev = " + gapStdDev);
+            debug.AppendLine("gapIndexMean = " + gapIndexMean);
+            debug.AppendLine("gapIndexStdDev = " + gapIndexStdDev);
+            for (int i = 0; i < wallHeight; i++)
+            {
+                for (int j = 0; j < wallWidth; j++)
+                {
+                    if (blockRows[i][j] == null) debug.Append("  ");
+                    else debug.Append("__");
+                }
+                debug.AppendLine();
+                for (int k = 0; k < platformSpacing; k++)
+                {
+                    debug.AppendLine();
+                }
+            }
+
+            debug.Append("The End\n");
+            System.IO.File.WriteAllText(filePath, debug.ToString());
         }
     }
 }
